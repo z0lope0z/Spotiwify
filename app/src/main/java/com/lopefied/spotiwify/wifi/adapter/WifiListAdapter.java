@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import com.lopefied.spotiwify.R;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by lope on 4/15/15.
  */
@@ -19,12 +22,15 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.ViewHo
 // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        @Inject
-        public TextView mTextView;
+        @InjectView(R.id.txt_wifi_name)
+        public TextView txtWifiName;
 
-        public ViewHolder(TextView v) {
+        @InjectView(R.id.txt_description)
+        public TextView txtDescription;
+
+        public ViewHolder(View v) {
             super(v);
-            mTextView = v;
+            ButterKnife.inject(this, v);
         }
     }
 
@@ -50,8 +56,7 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset[position]);
-
+        holder.txtWifiName.setText(mDataset[position]);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

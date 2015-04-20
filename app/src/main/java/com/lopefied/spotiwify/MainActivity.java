@@ -1,6 +1,7 @@
 package com.lopefied.spotiwify;
 
 import android.app.Activity;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lopefied.spotiwify.spotify.SpotiwifyService;
 import com.lopefied.spotiwify.wifi.adapter.WifiListAdapter;
+import com.squareup.seismic.ShakeDetector;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -33,6 +36,8 @@ public class MainActivity extends ActionBarActivity
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    SpotiwifyService spotiwifyService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +64,17 @@ public class MainActivity extends ActionBarActivity
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new WifiListAdapter(myDataset);
+        mAdapter = new WifiListAdapter(new String[]{"Test", "Example"});
         mRecyclerView.setAdapter(mAdapter);
+
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        ShakeDetector sd = new ShakeDetector(new ShakeDetector.Listener() {
+            @Override
+            public void hearShake() {
+                spotiwifyService.onShake();
+            }
+        });
+        sd.start(sensorManager);
     }
 
     @Override

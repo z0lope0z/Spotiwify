@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+#### Realm ####
+-keepnames public class * extends io.realm.RealmObject
+-keep class io.realm.** { *; }
+-dontwarn javax.**
+-dontwarn io.realm.**
