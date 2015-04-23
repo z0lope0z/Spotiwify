@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.common.base.Strings;
 import com.google.common.math.DoubleMath;
 import com.lopefied.spotiwify.receiver.AlarmReceiver;
+import com.lopefied.spotiwify.time.TimeServiceImpl;
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
@@ -23,14 +24,14 @@ import com.spotify.sdk.android.player.Spotify;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Album;
-import kaaes.spotify.webapi.android.models.CategoriesPager;
+import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import retrofit.Callback;
@@ -42,27 +43,50 @@ import retrofit.client.Response;
  */
 public class SpotiwifyServiceImpl implements SpotiwifyService {
     Context context;
+    List<String> albumIds = new ArrayList<>();
     List<String> trackIds = new ArrayList<>();
 
     private Player mPlayer;
+    TimeServiceImpl timeService;
 
     public SpotiwifyServiceImpl(Context context) {
         this.context = context;
+        this.timeService = new TimeServiceImpl();
     }
 
     @Override
     public void initialize(String accessToken) {
         initPlayer(accessToken);
         SpotifyApi api = new SpotifyApi();
-//        api.setAccessToken("BQBSEP8hoxXnxcqAk4zbd1rR2XibYXBCLy4ms_qW-17O-ekbFZx9KmhgL2kh1kyR65UIYbW1mIdQak8gt6SZzqm3DX5-IMSL3RZdkb66Zw2aaYpDKiz6BiFAqHVRn6ID230N1wXPgxwklCUFyxnLbzx174BUOHlaplI");
         api.setAccessToken(accessToken);
-        SpotifyService spotify = api.getService();
+        final SpotifyService spotify = api.getService();
 
-        spotify.getPlaylist("spotify", "0aXP5u51kHZiKvxkUPq0IL", new Callback<Playlist>() {
+        spotify.getPlaylists("lopegwapo", new Callback<Pager<Playlist>>() {
             @Override
-            public void success(Playlist playlist, Response response) {
-                for (PlaylistTrack track : playlist.tracks.items) {
-                    trackIds.add(track.track.id);
+            public void success(Pager<Playlist> playlistPager, Response response) {
+                Pattern pattern = Pattern.compile("^\\[([A-Z]+)\\]");
+                for (Playlist playlist : playlistPager.items) {
+                    Matcher matcher = pattern.matcher(playlist.name);
+                    if (matcher.find()) {
+                        String group = matcher.group(1);
+                        if (timeService.getTagsNow().contains(group))
+                            albumIds.add(playlist.id);
+                    }
+                }
+                for (String albumID : albumIds) {
+                    spotify.getPlaylist("lopegwapo", albumID, new Callback<Playlist>() {
+                        @Override
+                        public void success(Playlist playlist, Response response) {
+                            for (PlaylistTrack track : playlist.tracks.items) {
+                                trackIds.add(track.track.id);
+                            }
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    });
                 }
             }
 
@@ -71,31 +95,6 @@ public class SpotiwifyServiceImpl implements SpotiwifyService {
 
             }
         });
-
-//        spotify.getCategories(new HashMap<String, Object>(), new Callback<CategoriesPager>() {
-//
-//            @Override
-//            public void success(CategoriesPager categoriesPager, Response response) {
-//                Log.d("Album success", categoriesPager.categories.next);
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//                Log.d("Album failure", error.toString());
-//            }
-//        });
-//
-//        spotify.getAlbum("2dIGnmEIy1WZIcZCFSj6i8", new Callback<Album>() {
-//            @Override
-//            public void success(Album album, Response response) {
-//                Log.d("Album success", album.name);
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//                Log.d("Album failure", error.toString());
-//            }
-//        });
     }
 
     @Override
@@ -190,7 +189,6 @@ public class SpotiwifyServiceImpl implements SpotiwifyService {
 
                     }
                 });
-//                        mPlayer.play("spotify:track:4dzPQVLO4bBEw5pcNVvNaM");
             }
 
             @Override

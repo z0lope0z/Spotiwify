@@ -96,20 +96,19 @@ public class MainActivity extends ActionBarActivity
         });
         sd.start(sensorManager);
         Optional<String> tokenOptional = authService.getToken();
-        if (!tokenOptional.isPresent()) {
-            AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(SpotiwifyService.CLIENT_ID,
-                    AuthenticationResponse.Type.TOKEN,
-                    REDIRECT_URI);
-            builder.setScopes(new String[]{"user-read-private", "streaming"});
-            AuthenticationRequest request = builder.build();
-            AuthenticationClient.openLoginActivity(this, REQUEST_CODE_SPOTIFY, request);
-        } else {
-            spotiwifyService = new SpotiwifyServiceImpl(this);
-            spotiwifyService.initialize(tokenOptional.get());
-        }
+//        if (!tokenOptional.isPresent()) {
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(SpotiwifyService.CLIENT_ID,
+                AuthenticationResponse.Type.TOKEN,
+                REDIRECT_URI);
+        builder.setScopes(new String[]{"user-read-private", "streaming"});
+        AuthenticationRequest request = builder.build();
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE_SPOTIFY, request);
+//        } else {
+//            spotiwifyService = new SpotiwifyServiceImpl(this);
+//            spotiwifyService.initialize(tokenOptional.get());
+//        }
     }
 
-    // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "lopeemano://callback";
 
     @Override
@@ -121,7 +120,7 @@ public class MainActivity extends ActionBarActivity
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 authService.cacheToken(response.getAccessToken());
-                spotiwifyService= new SpotiwifyServiceImpl(this);
+                spotiwifyService = new SpotiwifyServiceImpl(this);
                 spotiwifyService.initialize(response.getAccessToken());
             }
         }

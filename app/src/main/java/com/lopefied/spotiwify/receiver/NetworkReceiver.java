@@ -19,6 +19,6 @@ public class NetworkReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ConnectivityManager conMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conMan.getActiveNetworkInfo();
-        spotiwifyService.onNetworkChanged(netInfo);
+//        spotiwifyService.onNetworkChanged(netInfo);
     }
 }

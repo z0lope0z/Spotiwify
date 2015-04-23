@@ -9,4 +9,6 @@ public interface NetworkService {
     public void onNetworkChanged(String name);
 
     public List<UserNetwork> getNetworkList();
+
+    public String getCurrentNetworkName();
 }
