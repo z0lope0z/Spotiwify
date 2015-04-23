@@ -88,19 +88,20 @@
     <orderEntry type="library" exported="" name="support-v4-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="spotify-player-1.0.0-beta9" level="project" />
     <orderEntry type="library" exported="" name="realm-android-0.80.0" level="project" />
-    <orderEntry type="library" exported="" name="dagger-2.0" level="project" />
     <orderEntry type="library" exported="" name="okio-1.2.0" level="project" />
+    <orderEntry type="library" exported="" name="dagger-2.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="eventbus-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.0.0" level="project" />
-    <orderEntry type="library" exported="" name="spotify-web-api-android-0.1.0" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
+    <orderEntry type="library" exported="" name="spotify-web-api-android-0.1.0" level="project" />
     <orderEntry type="library" exported="" name="butterknife-6.1.0" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="seismic-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.0.0" level="project" />
-    <orderEntry type="library" exported="" name="joda-time-2.7" level="project" />
     <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
+    <orderEntry type="library" exported="" name="joda-time-2.7" level="project" />
     <orderEntry type="library" exported="" name="spotify-auth-1.0.0-beta9" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.0.0" level="project" />
   </component>

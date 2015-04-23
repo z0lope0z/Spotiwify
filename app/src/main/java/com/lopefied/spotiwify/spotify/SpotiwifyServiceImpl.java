@@ -29,11 +29,13 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.greenrobot.event.EventBus;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
+import kaaes.spotify.webapi.android.models.Track;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -48,10 +50,12 @@ public class SpotiwifyServiceImpl implements SpotiwifyService {
 
     private Player mPlayer;
     TimeServiceImpl timeService;
+    SpotifyService spotify;
 
     public SpotiwifyServiceImpl(Context context) {
         this.context = context;
         this.timeService = new TimeServiceImpl();
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class SpotiwifyServiceImpl implements SpotiwifyService {
         initPlayer(accessToken);
         SpotifyApi api = new SpotifyApi();
         api.setAccessToken(accessToken);
-        final SpotifyService spotify = api.getService();
+        spotify = api.getService();
 
         spotify.getPlaylists("lopegwapo", new Callback<Pager<Playlist>>() {
             @Override
@@ -103,7 +107,21 @@ public class SpotiwifyServiceImpl implements SpotiwifyService {
         int rangeMin = 0;
         int rangeMax = trackIds.size();
         int randomValue = DoubleMath.roundToInt(rangeMin + (rangeMax - rangeMin) * r.nextDouble(), RoundingMode.FLOOR);
-        mPlayer.play("spotify:track:" + trackIds.get(randomValue));
+        String selectedTrack = trackIds.get(randomValue);
+        mPlayer.play("spotify:track:" + selectedTrack);
+        if (spotify != null) {
+            spotify.getTrack(selectedTrack, new Callback<Track>() {
+                @Override
+                public void success(Track track, Response response) {
+                    EventBus.getDefault().post(new Event.PlayerPlayMusicEvent(track.name));
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    System.out.println("");
+                }
+            });
+        }
     }
 
     @Override
@@ -145,6 +163,12 @@ public class SpotiwifyServiceImpl implements SpotiwifyService {
         alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 AlarmManager.INTERVAL_HOUR,
                 AlarmManager.INTERVAL_HOUR, alarmIntent);
+    }
+
+    public void onEventMainThread(Event.UserPauseMusicEvent event) {
+        if (mPlayer != null) {
+            mPlayer.pause();
+        }
     }
 
     protected void initPlayer(String token) {
